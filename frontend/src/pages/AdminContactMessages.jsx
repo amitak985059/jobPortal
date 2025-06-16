@@ -14,7 +14,6 @@ function AdminContactMessages() {
         const data = await res.json();
         const sortedMessages = data.data.sort((a, b) => new Date(b.sendAt) - new Date(a.sendAt));
         setMessages(sortedMessages);
-        console.log('CreatedAt:', msg.createdAt);
 
       } catch (err) {
         console.error('Error fetching contact messages:', err);

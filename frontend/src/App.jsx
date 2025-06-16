@@ -15,7 +15,7 @@ function App() {
   const location = useLocation();
 
   // Define routes where carousel should be hidden
-  const hideCarouselRoutes = ['/contactus', '/about'];
+  const hideCarouselRoutes = ['/contactus', '/about, /createJob'];
   const shouldShowCarousel = !hideCarouselRoutes.includes(location.pathname);
   return (
     <>

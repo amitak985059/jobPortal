@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 const CreateJob = () => {
     const [company, setCompany] = useState('');
     const [jobTitle, setJobTitle] = useState('');
@@ -11,6 +12,8 @@ const CreateJob = () => {
     const [eligibleBatch, setEligibleBatch] = useState('');
     const [jobLink, setJobLink] = useState('');
     const [expectedCtc, setExpectedCtc] = useState('');
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -58,21 +61,30 @@ const CreateJob = () => {
             </div>
 
             {/* Job Form */}
-            <div className="relative bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full z-10">
-                <h1 className="text-3xl font-bold text-center mb-6">Create a Job</h1>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input type="text" placeholder="Company" value={company} onChange={e => setCompany(e.target.value)} className="input" />
-                    <input type="text" placeholder="Job Title" value={jobTitle} onChange={e => setJobTitle(e.target.value)} className="input" />
-                    <textarea placeholder="Job Description" value={jobDescription} onChange={e => setJobDescription(e.target.value)} className="input" />
-                    <input type="text" placeholder="Job Location" value={jobLocation} onChange={e => setJobLocation(e.target.value)} className="input" />
-                    <input type="text" placeholder="Job Type" value={jobType} onChange={e => setJobType(e.target.value)} className="input" />
-                    <input type="text" placeholder="Salary" value={salary} onChange={e => setSalary(e.target.value)} className="input" />
-                    <input type="text" placeholder="Eligible Batch" value={eligibleBatch} onChange={e => setEligibleBatch(e.target.value)} className="input" />
-                    <input type="text" placeholder="Job Link" value={jobLink} onChange={e => setJobLink(e.target.value)} className="input" />
-                    <input type="text" placeholder="Expected CTC" value={expectedCtc} onChange={e => setExpectedCtc(e.target.value)} className="input" />
-                    <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Create Job</button>
-                </form>
+            <div className='flex items-center justify-center flex-col '>
+
+
+                <div className="relative bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full z-10">
+                    <h1 className="text-3xl font-bold text-center mb-6">Create a Job</h1>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <input type="text" placeholder="Company" value={company} onChange={e => setCompany(e.target.value)} className="input" />
+                        <input type="text" placeholder="Job Title" value={jobTitle} onChange={e => setJobTitle(e.target.value)} className="input" />
+                        <textarea placeholder="Job Description" value={jobDescription} onChange={e => setJobDescription(e.target.value)} className="input" />
+                        <input type="text" placeholder="Job Location" value={jobLocation} onChange={e => setJobLocation(e.target.value)} className="input" />
+                        <input type="text" placeholder="Job Type" value={jobType} onChange={e => setJobType(e.target.value)} className="input" />
+                        <input type="text" placeholder="Salary" value={salary} onChange={e => setSalary(e.target.value)} className="input" />
+                        <input type="text" placeholder="Eligible Batch" value={eligibleBatch} onChange={e => setEligibleBatch(e.target.value)} className="input" />
+                        <input type="text" placeholder="Job Link" value={jobLink} onChange={e => setJobLink(e.target.value)} className="input" />
+                        <input type="text" placeholder="Expected CTC" value={expectedCtc} onChange={e => setExpectedCtc(e.target.value)} className="input" />
+                        <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Create Job</button>
+                    </form>
+                </div>
+                <div className='bg-black bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-screen z-10 text-white mt-4'>
+                    <Link to="/getContactus">See messages sent by applicants.</Link>
+
+                </div>
             </div>
+
         </div>
     );
 };
