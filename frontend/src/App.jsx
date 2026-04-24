@@ -10,12 +10,33 @@ import About from './pages/About'
 import ContactUs from './pages/ContactUs'
 import Carousel from './pages/Carousel'
 import AdminContactMessages from './pages/AdminContactMessages'
+import { useEffect, useState } from 'react'
 
 function App() {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/jobs/getjobs`);
+        const data = await res.json();
+        setJobs(data.data);
+        setLoading(false);
+      } catch (err) {
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const location = useLocation();
 
   // Define routes where carousel should be hidden
-  const hideCarouselRoutes = ['/contactus', '/about, /createJob'];
+  const hideCarouselRoutes = ['/contactus', '/about', '/createJob'];
   const shouldShowCarousel = !hideCarouselRoutes.includes(location.pathname);
   return (
     <>
@@ -24,7 +45,7 @@ function App() {
         {shouldShowCarousel && <Carousel />}
       </div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home jobs={jobs} loading={loading} error={error} />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/createJob"

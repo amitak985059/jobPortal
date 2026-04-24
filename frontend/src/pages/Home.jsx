@@ -1,27 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const Home = () => {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-// we did this
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        // const res = await fetch('http://localhost:4000/jobs/getjobs');
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/jobs/getjobs`);
-
-        const data = await res.json();
-        setJobs(data.data);
-        setLoading(false);
-      } catch (err) {
-        setError(true);
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, []);
+const Home = ({ jobs, loading, error }) => {
 
   if (loading) return <div className="text-center mt-10 text-xl text-gray-300">Loading...</div>;
   if (error) return <div className="text-center mt-10 text-red-400">Failed to load jobs.</div>;

@@ -16,7 +16,6 @@ const createContactUs = async (req, res) => {
     }
 };
 
-// ✅ Properly export the controller function
 
 
 
