@@ -37,6 +37,11 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    companyType: {
+        type: String,
+        enum: ['Product', 'Service', 'Startup', 'Other'],
+        default: 'Other'
+    },
     createdAt: {
         type: Date,
         default: Date.now

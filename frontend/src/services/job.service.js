@@ -1,0 +1,27 @@
+import axios from 'axios';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+export const getJobs = async (filters) => {
+  const queryParams = new URLSearchParams();
+  if (filters.city) queryParams.append('city', filters.city);
+  if (filters.type) queryParams.append('type', filters.type);
+  if (filters.companyType) queryParams.append('companyType', filters.companyType);
+  if (filters.role) queryParams.append('role', filters.role);
+
+  const res = await fetch(`${BASE_URL}/jobs/getjobs?${queryParams.toString()}`);
+  if (!res.ok) throw new Error("Failed to fetch jobs");
+  return await res.json();
+};
+
+export const matchResume = async (file) => {
+  const formData = new FormData();
+  formData.append('resume', file);
+
+  const res = await fetch(`${BASE_URL}/jobs/match-resume`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error("Failed to match resume");
+  return await res.json();
+};
