@@ -1,24 +1,35 @@
-import './App.css'
-import React from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
-import Home from './pages/Home'
-import Login from './pages/login'
-import Register from './pages/Register'
-import CreateJob from './pages/CreateJob'
-import PrivateRoute from './pages/PrivateRoute'
-import Navbar from './pages/Navbar'
-import About from './pages/About'
-import ContactUs from './pages/ContactUs'
-import Carousel from './pages/Carousel'
-import AdminContactMessages from './pages/AdminContactMessages'
-import JobDetail from './pages/JobDetail'
-import SavedJobs from './pages/SavedJobs'
+import "./App.css";
+import React from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/login";
+import Register from "./pages/Register";
+import CreateJob from "./pages/CreateJob";
+import PrivateRoute from "./pages/PrivateRoute";
+import Navbar from "./pages/Navbar";
+import About from "./pages/About";
+import ContactUs from "./pages/ContactUs";
+import Carousel from "./pages/Carousel";
+import AdminContactMessages from "./pages/AdminContactMessages";
+import JobDetail from "./pages/JobDetail";
+import SavedJobs from "./pages/SavedJobs";
+import Profile from "./pages/Profile";
+import Toast from "./pages/Toast";
 
 function App() {
   const location = useLocation();
 
-  const hideCarouselRoutes = ['/contactus', '/about', '/createJob', '/login', '/register'];
-  const shouldShowCarousel = !hideCarouselRoutes.includes(location.pathname) && !location.pathname.startsWith('/jobs/');
+  const hideCarouselRoutes = [
+    "/contactus",
+    "/about",
+    "/createJob",
+    "/login",
+    "/register",
+    "/profile",
+  ];
+  const shouldShowCarousel =
+    !hideCarouselRoutes.includes(location.pathname) &&
+    !location.pathname.startsWith("/jobs/");
 
   return (
     <>
@@ -36,6 +47,7 @@ function App() {
         <Route path="/saved-jobs" element={<SavedJobs />} />
         <Route path="/about" element={<About />} />
         <Route path="/contactus" element={<ContactUs />} />
+        <Route path="/profile" element={<Profile />} />
         <Route
           path="/createJob"
           element={
@@ -53,8 +65,10 @@ function App() {
           }
         />
       </Routes>
+      {/* Global toast for save/unsave feedback */}
+      <Toast />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
