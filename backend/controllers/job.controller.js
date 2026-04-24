@@ -1,5 +1,6 @@
-
 const jobModel = require('../models/job.model');
+const pdfParse = require('pdf-parse');
+
 module.exports.createJob = async (req, res) => {
     try {
         const { company, jobTitle, jobDescription, jobLocation, jobType, salary, eligibleBatch, jobLink, expectedCtc } = req.body;
@@ -7,18 +8,10 @@ module.exports.createJob = async (req, res) => {
         if(existingJob){
             return res.status(400).json({success: false, error: 'Job with same link already exists'});
         }
-        const job = await new jobModel({
-            company,
-            jobTitle,
-            jobDescription,
-            jobLocation,
-            jobType,
-            salary,
-            eligibleBatch,
-            jobLink,
-            expectedCtc
+        const job = new jobModel({
+            company, jobTitle, jobDescription, jobLocation,
+            jobType, salary, eligibleBatch, jobLink, expectedCtc
         });
-        
 
         const savedJob = await job.save();
         res.status(201).json({ success: true, data: savedJob });
@@ -26,26 +19,50 @@ module.exports.createJob = async (req, res) => {
         res.status(400).json({ success: false, error: error.message });
     }
 }
+
 module.exports.getJobs = async (req, res) => {
     try {
-        const { type, city, companyType, role } = req.query;
+        const { type, city, companyType, role, page = 1, limit = 12 } = req.query;
         let query = {};
         
-        // Build the query object dynamically based on provided filters
-        if (type) query.jobType = new RegExp(type, 'i'); // e.g., 'Full-time', 'Internship'
-        if (city) query.jobLocation = new RegExp(city, 'i'); // e.g., 'Bangalore', 'Remote'
-        if (companyType) query.companyType = new RegExp(companyType, 'i'); // 'Product', 'Service'
-        if (role) query.jobTitle = new RegExp(role, 'i'); // e.g., 'Software Engineer'
+        if (type) query.jobType = new RegExp(type, 'i');
+        if (city) query.jobLocation = new RegExp(city, 'i');
+        if (companyType) query.companyType = new RegExp(companyType, 'i');
+        if (role) query.jobTitle = new RegExp(role, 'i');
 
-        // Find jobs matching the query, sorted by newest first
-        const jobs = await jobModel.find(query).sort({ createdAt: -1 });
-        res.status(200).json({ success: true, data: jobs });
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const total = await jobModel.countDocuments(query);
+        const jobs = await jobModel.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        res.status(200).json({
+            success: true,
+            data: jobs,
+            pagination: {
+                total,
+                page: parseInt(page),
+                limit: parseInt(limit),
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }
 }
 
-const pdfParse = require('pdf-parse');
+module.exports.getJobById = async (req, res) => {
+    try {
+        const job = await jobModel.findById(req.params.id);
+        if (!job) {
+            return res.status(404).json({ success: false, error: 'Job not found' });
+        }
+        res.status(200).json({ success: true, data: job });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+}
 
 module.exports.matchResume = async (req, res) => {
     try {
@@ -53,21 +70,22 @@ module.exports.matchResume = async (req, res) => {
             return res.status(400).json({ success: false, error: 'No resume file uploaded' });
         }
 
-        // 1. Parse the PDF buffer
         const data = await pdfParse(req.file.buffer);
         const text = data.text.toLowerCase();
 
         const techKeywords = [
-            'react', 'node', 'express', 'python', 'java', 'c\\+\\+', 'aws', 'docker', 
-            'kubernetes', 'mongodb', 'sql', 'javascript', 'typescript', 'angular', 
-            'vue', 'frontend', 'backend', 'full stack', 'machine learning', 'devops'
+            'react', 'node', 'express', 'python', 'java', 'aws', 'docker',
+            'kubernetes', 'mongodb', 'sql', 'javascript', 'typescript', 'angular',
+            'vue', 'frontend', 'backend', 'full stack', 'machine learning', 'devops',
+            'golang', 'rust', 'ruby', 'rails', 'spring', 'flutter', 'swift', 'kotlin'
         ];
         
+        // Safely escape special characters before building regex
         const extractedSkills = techKeywords.filter(skill => text.includes(skill));
 
-        // 3. Find jobs that mention these skills
         if (extractedSkills.length > 0) {
-            const skillRegex = new RegExp(extractedSkills.join('|'), 'i');
+            const escapedSkills = extractedSkills.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const skillRegex = new RegExp(escapedSkills.join('|'), 'i');
             const matchingJobs = await jobModel.find({
                 $or: [
                     { jobTitle: skillRegex },
@@ -75,15 +93,14 @@ module.exports.matchResume = async (req, res) => {
                 ]
             }).sort({ createdAt: -1 }).limit(50);
             
-            return res.status(200).json({ 
-                success: true, 
-                match: true, 
-                skills: extractedSkills, 
-                data: matchingJobs.length > 0 ? matchingJobs : await jobModel.find().sort({ createdAt: -1 }).limit(50) 
+            return res.status(200).json({
+                success: true,
+                match: true,
+                skills: extractedSkills,
+                data: matchingJobs.length > 0 ? matchingJobs : await jobModel.find().sort({ createdAt: -1 }).limit(50)
             });
         }
 
-        // Fallback if no skills found
         const allJobs = await jobModel.find().sort({ createdAt: -1 }).limit(50);
         res.status(200).json({ success: true, match: false, data: allJobs });
 
