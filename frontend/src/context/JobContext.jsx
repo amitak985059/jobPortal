@@ -120,6 +120,21 @@ export const JobProvider = ({ children }) => {
 
   const clearSavedJobs = () => setSavedJobIds(new Set());
 
+  const handleLazyApply = async (jobId) => {
+    try {
+      const { lazyApplyToJob } = await import('../services/job.service');
+      const data = await lazyApplyToJob(jobId);
+      if (data.success) {
+        showToast("⚡ Lazy Apply Success: " + data.message, "success");
+      }
+      return data;
+    } catch (err) {
+      console.error(err);
+      showToast("Lazy Apply Failed: " + err.message, "error");
+      throw err;
+    }
+  }
+
   return (
     <JobContext.Provider
       value={{
@@ -137,6 +152,7 @@ export const JobProvider = ({ children }) => {
         toggleSaveJob,
         loadSavedJobs,
         clearSavedJobs,
+        handleLazyApply,
         toast,
       }}
     >

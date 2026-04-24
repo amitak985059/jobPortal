@@ -11,5 +11,6 @@ router.post('/logout', userController.logoutUser);
 router.get('/profile', authMiddleware, userController.getProfile);
 router.post('/save-job/:jobId', authMiddleware, userController.saveJob);
 router.get('/saved-jobs', authMiddleware, userController.getSavedJobs);
+router.put('/lazy-apply-profile', authMiddleware, userController.updateLazyApplyProfile);
 
 module.exports = router;

@@ -17,12 +17,14 @@ const Home = () => {
     goToPage,
     savedJobIds,
     toggleSaveJob,
+    handleLazyApply,
   } = useJobContext();
   const { isAuthenticated } = useAuthContext();
 
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const fileInputRef = useRef(null);
+  const [applyingTo, setApplyingTo] = useState(null);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -373,21 +375,43 @@ const Home = () => {
                   </p>
 
                   {/* Actions */}
-                  <div className="flex gap-3 mt-5 pt-5 border-t border-gray-800/50">
+                  <div className="flex gap-2 mt-5 pt-5 border-t border-gray-800/50">
                     <Link
                       to={`/jobs/${job._id}`}
-                      className="flex-1 text-center py-3 rounded-2xl border border-blue-500/30 text-blue-400 text-sm font-bold hover:bg-blue-500/10 transition-all"
+                      className="flex-1 text-center py-2.5 rounded-xl border border-blue-500/30 text-blue-400 text-xs font-bold hover:bg-blue-500/10 transition-all flex items-center justify-center"
                     >
-                      View Details
+                      Details
                     </Link>
                     <a
                       href={job.jobLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 text-center py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20"
+                      className="flex-1 text-center py-2.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center"
                     >
-                      Apply Now
+                      Apply
                     </a>
+                    {isAuthenticated && (
+                      <button
+                        onClick={async () => {
+                          setApplyingTo(job._id);
+                          await handleLazyApply(job._id);
+                          setApplyingTo(null);
+                        }}
+                        disabled={applyingTo === job._id}
+                        className={`flex-[1.5] text-center py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-purple-600/20 flex items-center justify-center gap-1.5 ${applyingTo === job._id ? 'opacity-70 cursor-not-allowed' : ''}`}
+                      >
+                        {applyingTo === job._id ? (
+                          <>
+                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Applying
+                          </>
+                        ) : (
+                          <>
+                            ⚡ Lazy Apply
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               );

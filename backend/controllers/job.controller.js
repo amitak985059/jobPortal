@@ -109,3 +109,38 @@ module.exports.matchResume = async (req, res) => {
         res.status(500).json({ success: false, error: 'Failed to process resume' });
     }
 }
+
+const { autoApplyToJob } = require('../services/lazyApply.service');
+const userModel = require('../models/user.models');
+
+module.exports.lazyApply = async (req, res) => {
+    try {
+        const jobId = req.params.id;
+        const userId = req.user._id;
+
+        const job = await jobModel.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ success: false, error: 'Job not found' });
+        }
+
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        const lazyProfile = user.lazyApplyProfile || {};
+
+        // Run Playwright worker
+        const result = await autoApplyToJob(job.jobLink, user, lazyProfile);
+
+        if (result.success) {
+            return res.status(200).json({ success: true, message: result.message, screenshotUrl: result.screenshotUrl });
+        } else {
+            return res.status(400).json({ success: false, error: result.message });
+        }
+
+    } catch (error) {
+        console.error('Lazy Apply Error:', error);
+        res.status(500).json({ success: false, error: 'Failed to initiate lazy apply' });
+    }
+}

@@ -47,3 +47,18 @@ export const getJobByIdAPI = async (id) => {
   if (!res.ok) throw new Error("Job not found");
   return await res.json();
 };
+
+export const updateLazyProfileAPI = async (profileData) => {
+  const res = await fetch(`${BASE_URL}/users/lazy-apply-profile`, {
+    method: "PUT",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(profileData),
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.error || "Failed to update lazy apply profile");
+  return data;
+};

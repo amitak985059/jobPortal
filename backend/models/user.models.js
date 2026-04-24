@@ -24,7 +24,15 @@ const userSchema = new mongoose.Schema({
     savedJobs: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'job'
-    }]
+    }],
+    lazyApplyProfile: {
+        phone: { type: String, default: '' },
+        linkedin: { type: String, default: '' },
+        github: { type: String, default: '' },
+        portfolio: { type: String, default: '' },
+        resumeUrl: { type: String, default: '' },
+        yearsOfExperience: { type: Number, default: 0 }
+    }
 }, { timestamps: true });
 
 userSchema.methods.generateAuthToken = function(){

@@ -104,3 +104,30 @@ module.exports.getSavedJobs = async (req, res) => {
         res.status(400).json({ success: false, error: error.message });
     }
 }
+
+module.exports.updateLazyApplyProfile = async (req, res) => {
+    try {
+        const { phone, linkedin, github, portfolio, resumeUrl, yearsOfExperience } = req.body;
+        const user = await userModel.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set: {
+                    lazyApplyProfile: {
+                        phone: phone || '',
+                        linkedin: linkedin || '',
+                        github: github || '',
+                        portfolio: portfolio || '',
+                        resumeUrl: resumeUrl || '',
+                        yearsOfExperience: yearsOfExperience || 0
+                    }
+                }
+            },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+        res.status(200).json({ success: true, data: user });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+}
