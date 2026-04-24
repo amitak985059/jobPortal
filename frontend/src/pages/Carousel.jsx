@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 
 
 const images = [
-  'https://images.unsplash.com/photo-1630958234938-4f6a4a9dbf3a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1622675235457-38708d51d6d5?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1626910771652-bcf463ae516b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  'https://images.unsplash.com/photo-1630958234938-4f6a4a9dbf3a?q=80&w=1200&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1622675235457-38708d51d6d5?q=80&w=1200&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1626910771652-bcf463ae516b?q=80&w=1200&auto=format&fit=crop'
 ];
 
 const Carousel = () => {
@@ -33,7 +33,7 @@ const Carousel = () => {
       nextSlide();
     }, 5000);
     return () => clearInterval(intervalRef.current);
-  });
+  }, [index]);
 
   // Smooth reset without flicker
   useEffect(() => {
@@ -62,6 +62,7 @@ const Carousel = () => {
             key={i}
             src={src}
             alt={`Slide ${i}`}
+            loading="lazy"
             className="w-full h-[450px] object-cover flex-shrink-0"
           />
         ))}

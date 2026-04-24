@@ -1,10 +1,10 @@
 import './App.css'
 import React from 'react'
-import { Routes, Route, Link , useLocation} from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/login'
 import CreateJob from './pages/CreateJob'
-import PrivateRoute from './pages/PrivateRoute'  // Import the PrivateRoute component
+import PrivateRoute from './pages/PrivateRoute'
 import Navbar from './pages/Navbar'
 import About from './pages/About'
 import ContactUs from './pages/ContactUs'
@@ -15,8 +15,9 @@ function App() {
   const location = useLocation();
 
   // Define routes where carousel should be hidden
-  const hideCarouselRoutes = ['/contactus', '/about, /createJob'];
+  const hideCarouselRoutes = ['/contactus', '/about', '/createJob', '/login'];
   const shouldShowCarousel = !hideCarouselRoutes.includes(location.pathname);
+
   return (
     <>
       <Navbar />
@@ -36,12 +37,12 @@ function App() {
         />
         <Route path="/about" element={<About />} />
         <Route path='/contactus' element={<ContactUs />} />
-        <Route path='/getContactus' element={<PrivateRoute>
+        <Route path='/getContactus' element={
+            <PrivateRoute>
               <AdminContactMessages />
-            </PrivateRoute>} />
-
+            </PrivateRoute>
+        } />
       </Routes>
-
     </>
   )
 }

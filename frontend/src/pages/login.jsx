@@ -1,25 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuthContext } from '../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [errorMsg, setErrorMsg] = useState('');
+  const { login } = useAuthContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
-
-      const res = await axios.post('/users/login', { email, password });
-      console.log(res.data);
-      localStorage.setItem('token', res.data.token);
-      navigate('/createJob');
-    } catch (error) {
-      console.error(error);
+    setErrorMsg('');
+    const result = await login({ email, password });
+    if (!result.success) {
+      setErrorMsg(result.error || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -38,6 +33,12 @@ const Login = () => {
       >
         <h2 className="text-3xl mb-6 font-semibold text-center">Login</h2>
         
+        {errorMsg && (
+          <div className="mb-4 bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded text-sm text-center">
+            {errorMsg}
+          </div>
+        )}
+
         {/* Email Input */}
         <div className="mb-6">
           <label htmlFor="email" className="block mb-2">Email</label>
