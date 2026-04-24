@@ -42,10 +42,10 @@ const jobSchema = new mongoose.Schema({
         enum: ['Product', 'Service', 'Startup', 'Other'],
         default: 'Other'
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
+    source: {
+        type: String,
+        default: 'Manual'
     }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('job', jobSchema);
